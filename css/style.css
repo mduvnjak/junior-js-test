@@ -1,1 +1,37 @@
 /* add popup css here */
+.follow {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  background: lightblue;
+  font-family: sans-serif;
+  padding: 10px ;
+  border: 1px grey outset;
+}
+
+.follow .popup-image {
+  display: inline-block;
+}
+
+.follow .popup-text {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.follow .popup-text .popup-close {
+  color: grey;
+  font-family: sans-serif;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding-right: 2px;
+}
+
+.follow .popup-text .popup-close:hover {
+  cursor: pointer;
+}
+
+.follow .popup-text .popup-article {
+  padding-right: 30px;
+}
