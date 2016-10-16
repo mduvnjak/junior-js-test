@@ -9,67 +9,102 @@ $(function(){
 /**
  * gets a random user from randomuser.me
  */
- var recieved = false;
- var currentUser = {};
+
+// polutting global namespace
+// TODO add to pageController object?
+var isRendered = false;
+var currentUser; // french guy
+var userHistory = []; // logging users
 
 function fetchUser() {
-    // TODO: implement
-    $.getJSON('https://randomuser.me/api/', function(data) {
-        currentUser = data.results[0];
-        //console.log(currentUser.nat);--------> delete after testing
+    $.ajax({
+        url: 'http://api.randomuser.me/?nat=gb',
+        dataType: 'json',
+        success: function (result) {
+            if (result.results) {
+                currentUser = result.results[0];
+            } else if (result.error) {
+                console.log(result.error);
+            } else {
+                console.log('weird...');
+            }
+        }
     });
+
+    // using this after ajax call is unpredictable,
+    // so i check in shouldRender if currentUser !== undefined
 }
 
 /**
  * creates and inserts the popup into the DOM
  */
 function render() {
-    $('body').append(
-        "<div class='follow'>"
-            + "<div class='popup-image'>"
-                + "<img src='" + currentUser.picture.large + "'>"
-            +  "</div>"
-            + "<div class ='popup-text'>"
-                + "<div class = 'popup-close'> X </div>"
-                + "<div class = 'popup-article'>"
-                    + "<b>Hi there!</b>"
-                    + "<br /> "
-                    + "For any questions contact me via "
-                         + "<a href='mailto:" + currentUser.email + "'>email</a>"
+    if (currentUser !== undefined) {
+        $('body').append(
+            "<div class='follow'>"
+                + "<div class='popup-image'>"
+                    + "<img src='" + currentUser.picture.large + "'>"
+                +  "</div>"
+                + "<div class ='popup-text'>"
+                    + "<div class = 'popup-close'> X </div>"
+                    + "<div class = 'popup-article'>"
+                        + "<b>Hi there!</b>"
+                        + "<br /> "
+                        + "For any questions contact me via "
+                             + "<a href='mailto:" + currentUser.email
+                             + "?subject=Junior Assignment'>email</a>"
+                    + "</div>"
                 + "</div>"
-            + "</div>"
-        + "</div>");
+            + "</div>");
 
-    if(currentUser.gender === "male"){
-        $(".follow").css("background", "lightblue");
-    } else {
-        $(".follow").css("background", "lightcoral");
+        if(currentUser.gender === "male"){
+            $(".follow").css("background", "lightblue");
+        } else {
+            $(".follow").css("background", "lightcoral");
+        }
+
+        $(".popup-close").click(function () {
+            $(".follow").remove();
+        });
+
+        isRendered = true;
     }
-
-    $(".popup-close").click(function () {
-        $(".follow").remove();
-    });
 }
 
 /**
  * checks if all conditions are met to render the popup
  * @return Boolean
  */
-function shouldRender() {//&& currentUser.nat==="FR"-------> add after testing
+function shouldRender() {//&& -------> add after testing
     // TODO: implement
-    if(((document.documentElement.scrollTop + document.body.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight)) >= 0.65){
-        return true;
-    } else {
-        return false;
+    var is65 = ((document.documentElement.scrollTop + document.body.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight)) >= 0.65;
+    var isPost = window.location.pathname.split('/').reverse()[0] === "post.html";
+
+    // would be better to use trackUser here,
+    // as now my render method must check also...
+    if (is65 && isPost) {
+        return !isRendered;
     }
 
+    return false;
 }
 
 /**
  *  tracks the rendered user
  */
 function trackUser() {
-    // TODO: implement
+    if (currentUser !== undefined) {
+        if (userHistory.indexOf(currentUser.email) > -1) {
+            currentUser = undefined; // dont show repeating user
+        } else {
+            userHistory.push(currentUser.email);
+        }
+    }
+
+    // i didnt get the logic behind trackUser
+    // we only call fetchUser once...
+
+    console.log('userHistory', userHistory);
 }
 
 /**
