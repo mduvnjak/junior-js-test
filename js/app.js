@@ -9,16 +9,13 @@ $(function(){
 /**
  * gets a random user from randomuser.me
  */
-
-// polutting global namespace
-// TODO add to pageController object?
 var isRendered = false;
 var currentUser; // french guy
 var userHistory = []; // logging users
 
 function fetchUser() {
     $.ajax({
-        url: 'http://api.randomuser.me/?nat=gb',
+        url: 'http://api.randomuser.me/?nat=fr',
         dataType: 'json',
         success: function (result) {
             if (result.results) {
@@ -75,8 +72,7 @@ function render() {
  * checks if all conditions are met to render the popup
  * @return Boolean
  */
-function shouldRender() {//&& -------> add after testing
-    // TODO: implement
+function shouldRender() {
     var is65 = ((document.documentElement.scrollTop + document.body.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight)) >= 0.65;
     var isPost = window.location.pathname.split('/').reverse()[0] === "post.html";
 
